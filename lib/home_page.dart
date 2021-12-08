@@ -47,37 +47,51 @@ class _HomePageState extends State<HomePage> {
            physics: const NeverScrollableScrollPhysics(),
            itemBuilder: (context, index) => Column(
              children: [
-               Row(
-                 mainAxisAlignment: MainAxisAlignment.center,
-                 children: [
-                   Text(DBSearchProvider.dbSearchProvider.noteList[index]['title']),
-                   SizedBox(width: 20,),
-                   ElevatedButton(
-                     onPressed: () async {
-                       await DBSearchProvider.dbSearchProvider.deleteNote(DBSearchProvider.dbSearchProvider.noteList[index]["id"]);
-                       await DBSearchProvider.dbSearchProvider.getAllNote();
-
-                       setState(() {});
-                     },
-                     child: const Text(
-                       "delete Data",
+               Padding(
+                 padding: const EdgeInsets.only(bottom: 8.0),
+                 child: Column(
+                   children: [
+                     Text(
+                         DBSearchProvider.dbSearchProvider.noteList[index]['title'],
+                       style: TextStyle(
+                           fontSize: 18,
+                         fontWeight: FontWeight.w600,
+                       ),
                      ),
-                   ),
-                   SizedBox(width: 20,),
-                   ElevatedButton(
-                     style: ElevatedButton.styleFrom(primary: Colors.green),
-                     onPressed: () async {
-                       await DBSearchProvider.dbSearchProvider.updateNote("sumit",DBSearchProvider.dbSearchProvider.noteList[index]["id"]);
-                        await DBSearchProvider.dbSearchProvider.getAllNote();
+                     SizedBox(width: 20,),
+                     Row(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
 
-                       setState(() {});
-                     },
-                     child: const Text(
-                       "update Data",
+                         ElevatedButton(
+                           onPressed: () async {
+                             await DBSearchProvider.dbSearchProvider.deleteNote(DBSearchProvider.dbSearchProvider.noteList[index]["id"]);
+                             await DBSearchProvider.dbSearchProvider.getAllNote();
+
+                             setState(() {});
+                           },
+                           child: const Text(
+                             "delete Data",
+                           ),
+                         ),
+                         SizedBox(width: 20,),
+                         ElevatedButton(
+                           style: ElevatedButton.styleFrom(primary: Colors.green),
+                           onPressed: () async {
+                             await DBSearchProvider.dbSearchProvider.updateNote("sumit",DBSearchProvider.dbSearchProvider.noteList[index]["id"]);
+                              await DBSearchProvider.dbSearchProvider.getAllNote();
+
+                             setState(() {});
+                           },
+                           child: const Text(
+                             "update Data",
+                           ),
+                         ),
+
+                       ],
                      ),
-                   ),
-
-                 ],
+                   ],
+                 ),
                )
              ],
            ),
