@@ -12,7 +12,7 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with ValidationMixin{
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -41,6 +41,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 TextFormField(
                   controller: emailController,
+                  validator: validateEmail,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     labelText: "Email",
@@ -77,6 +78,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 TextFormField(
                   controller: passwordController,
+                  validator: validatePassword,
                   obscureText: !isVisible,
                   decoration: InputDecoration(
                     labelText: "Password",
@@ -129,17 +131,18 @@ class _LoginPageState extends State<LoginPage> {
 
                 GestureDetector(
                   onTap: () async {
-                    if(emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-                      var login = await DBSearchProvider.dbSearchProvider.loginUser(
-                          emailController.text.trim(), passwordController.text);
-                      print(login);
+                    if(key.currentState.validate()) {
+                      var login = await DBSearchProvider.dbSearchProvider.loginUser(emailController.text.trim(), passwordController.text);
+
                       if(login!="loginFail"){
+
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const HomePage(),
                           ),
                         );
+
                       }else{
                         Fluttertoast.showToast(
                             msg: "Email and password is invalid",
@@ -152,7 +155,6 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       }
                     }
-
                   },
                   child: Container(
                     padding: const EdgeInsets.all(15),
@@ -205,4 +207,32 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+}
+
+class ValidationMixin {
+  String validateEmail(String value) {
+    if(value.isEmpty){
+      return "Enter your email-id";
+    }
+    Pattern pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = RegExp(pattern);
+    if (!regex.hasMatch(value)) {
+      return 'Enter valid email-id';
+    }
+
+    return null;
+  }
+
+
+  String validatePassword(String value) {
+    if (value.isEmpty) {
+      return  'enter your password';
+    }
+    if (value.length < 4) {
+      return  'use more than 4 character';
+    }
+    return null;
+  }
+
 }
