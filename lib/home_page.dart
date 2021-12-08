@@ -1,6 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:local_database_example/model/note_model.dart';
-import 'package:intl/intl.dart';
+import 'package:local_database_example/user_page.dart';
 import 'database/db.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,101 +13,156 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-
-
-
-  // Save data to database
-  void _save() async {
-    await DBSearchProvider.dbSearchProvider.createNote("1","sumit","dsf","07-12-2021");
-    await DBSearchProvider.dbSearchProvider.getAllNote();
-    print(DBSearchProvider.dbSearchProvider.noteList.length);
+  void getUser() async {
+    await DBSearchProvider.dbSearchProvider.getAllUser();
     setState(() {
-
     });
   }
 
   @override
   void initState() {
     super.initState();
+    getUser();
   }
 
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          DBSearchProvider.dbSearchProvider.noteList.length ==0
-              ?
-          Container()
-              :
-         ListView.builder(
-           itemCount: DBSearchProvider.dbSearchProvider.noteList.length,
-           shrinkWrap: true,
-           physics: const NeverScrollableScrollPhysics(),
-           itemBuilder: (context, index) => Column(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text("Home"),
+      ),
+      body: DBSearchProvider.dbSearchProvider.userList.isEmpty
+          ?
+      Container()
+          :
+         Padding(
+           padding: const EdgeInsets.fromLTRB(20,30,20,0),
+           child: Column(
              children: [
-               Padding(
-                 padding: const EdgeInsets.only(bottom: 8.0),
-                 child: Column(
-                   children: [
-                     Text(
-                         DBSearchProvider.dbSearchProvider.noteList[index]['title'],
+
+               Row(
+                 children: const [
+
+                   Text(
+                     "Id",
+                     style: TextStyle(
+                       fontSize: 18,
+                       fontWeight: FontWeight.w600,
+                     ),
+                   ),
+
+                   SizedBox(width: 10),
+
+                   Expanded(
+                     child: Text(
+                       "Name",
                        style: TextStyle(
-                           fontSize: 18,
+                         fontSize: 18,
                          fontWeight: FontWeight.w600,
                        ),
                      ),
-                     SizedBox(width: 20,),
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.center,
-                       children: [
+                   ),
 
-                         ElevatedButton(
-                           onPressed: () async {
-                             await DBSearchProvider.dbSearchProvider.deleteNote(DBSearchProvider.dbSearchProvider.noteList[index]["id"]);
-                             await DBSearchProvider.dbSearchProvider.getAllNote();
-
-                             setState(() {});
-                           },
-                           child: const Text(
-                             "delete Data",
-                           ),
-                         ),
-                         SizedBox(width: 20,),
-                         ElevatedButton(
-                           style: ElevatedButton.styleFrom(primary: Colors.green),
-                           onPressed: () async {
-                             await DBSearchProvider.dbSearchProvider.updateNote("sumit",DBSearchProvider.dbSearchProvider.noteList[index]["id"]);
-                              await DBSearchProvider.dbSearchProvider.getAllNote();
-
-                             setState(() {});
-                           },
-                           child: const Text(
-                             "update Data",
-                           ),
-                         ),
-
-                       ],
+                   Text(
+                     "Profile",
+                     style: TextStyle(
+                       fontSize: 18,
+                       fontWeight: FontWeight.w600,
                      ),
+                   ),
+                   SizedBox(width: 10),
+
+                 ],
+               ),
+
+               SizedBox(height: 20),
+
+               ListView.builder(
+                 itemCount: DBSearchProvider.dbSearchProvider.userList.length,
+                 shrinkWrap: true,
+                 physics: const NeverScrollableScrollPhysics(),
+                 itemBuilder: (context, index) => Column(
+                   children: [
+                     InkWell(
+                       onTap: () async {
+                        var value = await Navigator.push(
+                             context,
+                             MaterialPageRoute(
+                               builder: (context) =>
+                                   UserPage(
+                                       id:DBSearchProvider.dbSearchProvider.userList[index]['id'],
+                                   ),
+                             ),
+                         );
+
+                        if(value!=null){
+                          getUser();
+                        }
+                       },
+                       child: Padding(
+                         padding: const EdgeInsets.fromLTRB(0,0,0,10),
+                         child: Row(
+                           crossAxisAlignment: CrossAxisAlignment.center,
+                           children: [
+                             Text(
+                               "${DBSearchProvider.dbSearchProvider.userList[index]['id']}",
+                               style: const TextStyle(
+                                 fontSize: 18,
+                                 fontWeight: FontWeight.w600,
+                               ),
+                             ),
+
+                             SizedBox(width: 10),
+
+                             Text(
+                               "${DBSearchProvider.dbSearchProvider.userList[index]['name'] }",
+                               style: const TextStyle(
+                                 fontSize: 18,
+                                 fontWeight: FontWeight.w600,
+                               ),
+                             ),
+
+                             SizedBox(width: 10),
+
+                             Expanded(
+                               child: Text(
+                                 DBSearchProvider.dbSearchProvider.userList[index]['email'],
+                                 maxLines: 1,
+                                 overflow: TextOverflow.ellipsis,
+                                 style: const TextStyle(
+                                   fontSize: 18,
+                                   fontWeight: FontWeight.w600,
+                                 ),
+                               ),
+                             ),
+
+
+
+                             ClipRRect(
+                               borderRadius: BorderRadius.circular(100),
+                               child: Image.file(
+                                   File.fromUri(
+                                       Uri.parse(
+                                           DBSearchProvider.dbSearchProvider.userList[index]['image'],
+                                       ),
+                                   ),
+                                 fit: BoxFit.fill,
+                                 width: 40,
+                                 height: 40,
+                               ),
+                             ),
+
+                           ],
+                         ),
+                       ),
+                     )
                    ],
                  ),
-               )
+               ),
              ],
            ),
          ),
-          ElevatedButton(
-              onPressed: () async {
-                _save();
-              },
-              child: const Text(
-                  "insert Data",
-              ),
-          ),
-
-        ],
-      ),
     );
   }
 }

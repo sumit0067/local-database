@@ -26,52 +26,75 @@ class DBSearchProvider {
     return await openDatabase(path, version: 1, onOpen: (db) {},
         onCreate: (Database db, int version) async {
           db.execute(
-            'CREATE TABLE Notes ('
+            'CREATE TABLE User ('
                 'id INTEGER PRIMARY KEY AUTOINCREMENT,'
-                'number TEXT,'
-                'description TEXT,'
-                'title TEXT,'
-                'createdTime TEXT'
+                'name TEXT,'
+                'email TEXT,'
+                'password TEXT,'
+                'image TEXT'
                 ')',
           );
         });
 
   }
 
-  List noteList = [];
+  List userList = [];
 
-  getAllNote() async {
+  getAllUser() async {
     final db = await database;
-    final res = await db.rawQuery("SELECT * FROM Notes");
-    noteList = res;
+    final res = await db.rawQuery("SELECT * FROM User");
+    userList = res;
   }
 
-  createNote(String number,String description,String title,String createdTime) async{
+  createUser(String name,String email,String password,String image) async{
     final db= await database;
-    final res = await db.rawInsert('INSERT INTO Notes(number,description,title,createdTime) VALUES("$number","$description","$title","$createdTime")');
-    return res;
+
+    final res = await db.rawQuery("SELECT * FROM User WHERE email = '$email' and password = '$password'");
+    if(res.isEmpty){
+      final res = await db.rawInsert('INSERT INTO User(name,email,password,image) VALUES("$name","$email","$password","$image")');
+      return res;
+    }else{
+      return "user exist";
+    }
   }
 
-  Future<int> deleteAllNote() async {
+  Future<int> deleteAllUser() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM Notes');
+    final res = await db.rawDelete('DELETE FROM User');
     return res;
   }
 
-  Future<int> deleteNote(int id) async {
+  Future<int> deleteUser(int id) async {
     final db = await database;
-    final res = await db.rawDelete("DELETE FROM Notes Where id = '$id'");
+    final res = await db.rawDelete("DELETE FROM User Where id = '$id'");
     return res;
   }
 
-  updateNote(String title,int id) async {
+  updateUser(String name,String email,String image,int id) async {
 
     // print("$live_price,$gain_loss,$symbol");
 
     final db = await database;
-    final res = await db.rawQuery("UPDATE Notes SET title = '$title' WHERE id = '$id'");
+    final res = await db.rawQuery("UPDATE User SET name='$name',email='$email',image='$image' WHERE id = '$id'");
 
     return res;
+  }
+
+  selectUser(int id)async{
+    final db = await database;
+    final res = await db.rawQuery("SELECT name,email,password,image FROM User WHERE id ='$id'");
+    return res;
+  }
+
+  loginUser(String email,String password)async{
+    final db = await database;
+    final res = await db.rawQuery("SELECT * FROM User WHERE email = '$email' and password = '$password'");
+
+    if(res.isNotEmpty){
+      return res;
+    }else{
+      return "loginFail";
+    }
   }
 
 /*  List<AccountList> accountList = [];
