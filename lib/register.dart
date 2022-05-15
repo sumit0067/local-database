@@ -12,7 +12,7 @@ class RegisterPage extends StatefulWidget {
   _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> with ValidationMixin{
+class _RegisterPageState extends State<RegisterPage>  {
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -432,7 +432,7 @@ class _RegisterPageState extends State<RegisterPage> with ValidationMixin{
   }
 }
 
-class ValidationMixin {
+
   String validateEmail(String value) {
     if(value.isEmpty){
       return "Enter your email-id";
@@ -481,4 +481,3 @@ class ValidationMixin {
     return null;
   }
 
-}

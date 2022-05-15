@@ -129,8 +129,8 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin{
                   height: 50,
                 ),
 
-                GestureDetector(
-                  onTap: () async {
+                ElevatedButton(
+                  onPressed: () async {
                     if(key.currentState.validate()) {
                       var login = await DBSearchProvider.dbSearchProvider.loginUser(emailController.text.trim(), passwordController.text);
 
